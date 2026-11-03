@@ -20,7 +20,7 @@ Ez a dokumentum a szkriptek által létrehozott és a kutatásban használt táb
 | `nem_illesztett_poligon.csv` | `emisszio_csatolas.py` | poligon-név | poligonréteg-beli, de adat nélküli nevek |
 
 Az `emisszio_csatolas.py` műveleteit QGIS-ben végezném el (de feltöltöttem a repo-ba)
-
+A `kombinal_cellak.py`-t még nem futtattam le
 ### A folyamat egy pillantásra
 
 ```
