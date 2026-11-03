@@ -1,0 +1,179 @@
+// =====================================================================
+// Szélcsendes + hideg EPIZÓDNAPOK -> CAMS / S5P kompozitok TÉL x HÓNAP cellánként
+// Minden cellára külön: epizódnapok átlaga ÉS ugyanazon tél ugyanazon hónapjának
+// NEM epizódnapjai (alapvonal), 5x5 km-es rácson. Az összegzés (súlyozás, tartalék-
+// alapvonal) a letöltött táblákon történik (kombinal_cellak.py).
+// FIGYELEM: ezt a szkriptet nem tudtam GEE-ben lefuttatni; először kis területen /
+// egyetlen télre próbáld ki (START_YEAR = END_YEAR = 2024).
+// =====================================================================
+
+// ---------------- 1. BEÁLLÍTÁSOK -------------------------------------
+var START_YEAR = 2021;          // első tél: 2021/22
+var END_YEAR   = 2025;          // utolsó tél: 2025/26
+var SEASON_START = '-10-15';
+var SEASON_END   = '-04-15';    // a záró dátum kizáró: az utolsó nap április 14.
+var WIND_MAX   = 2;             // m/s: az epizód MINDEN napján ennél kisebb az országos átlag
+var TEMP_MAX_K = 278.15;        // K (= 5 °C)
+var WINDOW     = 3;             // legalább ennyi egymást követő nap = epizód
+
+// ---------------- 2. TERÜLET + SZEZONSZŰRŐ ---------------------------
+var hungary = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017')
+  .filter(ee.Filter.eq('country_na', 'Hungary')).geometry();
+Map.centerObject(hungary, 7);
+
+function winterOnly(col) {
+  var f = [];
+  for (var y = START_YEAR; y <= END_YEAR; y++) {
+    f.push(ee.Filter.date(y + SEASON_START, (y + 1) + SEASON_END));
+  }
+  return col.filter(ee.Filter.or.apply(null, f));
+}
+function addDate(img) { return img.set('date', img.date().format('YYYY-MM-dd')); }
+
+// ---------------- 3. NAPI SZÉL + HŐMÉRSÉKLET TÁBLA (ERA5-Land) --------
+var era = winterOnly(ee.ImageCollection('ECMWF/ERA5_LAND/DAILY_AGGR')
+  .select(['u_component_of_wind_10m', 'v_component_of_wind_10m', 'temperature_2m']));
+
+var dayTable = ee.FeatureCollection(era.map(function(img) {
+  var speed = img.select('u_component_of_wind_10m')
+    .hypot(img.select('v_component_of_wind_10m')).rename('wind');
+  var s = speed.addBands(img.select('temperature_2m')).reduceRegion({
+    reducer: ee.Reducer.mean(), geometry: hungary,
+    scale: 11132, bestEffort: true, maxPixels: 1e9
+  });
+  return ee.Feature(null, {
+    t: img.get('system:time_start'),
+    date: img.date().format('YYYY-MM-dd'),
+    wind: s.get('wind'),
+    temp: s.get('temperature_2m')
+  });
+}));
+
+// ---------------- 4. EPIZÓD-KIVÁLASZTÁS (kliensoldalon) --------------
+var rows = dayTable.getInfo().features
+  .map(function(f) { return f.properties; })
+  .filter(function(r) { return r.wind !== null && r.temp !== null; })
+  .sort(function(a, b) { return a.t - b.t; });
+
+function pickDays(wmax) {
+  var picked = {};
+  for (var i = 0; i <= rows.length - WINDOW; i++) {
+    var w = rows.slice(i, i + WINDOW);
+    var consecutive = (w[WINDOW - 1].t - w[0].t) === (WINDOW - 1) * 86400000;
+    var ok = w.every(function(r) { return r.wind < wmax && r.temp < TEMP_MAX_K; });
+    if (consecutive && ok) { w.forEach(function(r) { picked[r.date] = true; }); }
+  }
+  return Object.keys(picked).sort();
+}
+
+var selected = pickDays(WIND_MAX);
+print('KIVÁLASZTOTT epizódnapok (' + selected.length + ' db):', selected);
+
+// ---------------- 5. TÉL x HÓNAP CELLÁK (kliensoldalon) ----------------
+// Cella = (tél kezdőéve, hónap). Minden szezonnapot epizód / nem epizód csoportba sorolunk.
+var isEpi = {};
+selected.forEach(function(d) { isEpi[d] = true; });
+
+var cellMap = {};
+rows.forEach(function(r) {
+  var dt = new Date(r.t);
+  var y = dt.getUTCFullYear(), m = dt.getUTCMonth() + 1;
+  var w = (m >= 7) ? y : y - 1;                 // a tél kezdőéve
+  var key = w + '_' + (m < 10 ? '0' + m : m);
+  if (!cellMap[key]) { cellMap[key] = {key: key, tel: w, honap: m, epi: [], non: []}; }
+  (isEpi[r.date] ? cellMap[key].epi : cellMap[key].non).push(r.date);
+});
+
+// Csak azok a cellák kellenek, ahol van epizódnap ÉS van nem epizódnap
+var cells = Object.keys(cellMap).sort().map(function(k) { return cellMap[k]; })
+  .filter(function(c) { return c.epi.length > 0 && c.non.length > 0; });
+var skipped = Object.keys(cellMap).map(function(k) { return cellMap[k]; })
+  .filter(function(c) { return c.epi.length > 0 && c.non.length === 0; });
+print('Cellák epizóddal (tél_hónap: epizódnap / nem epizódnap):',
+  cells.map(function(c) { return c.key + ': ' + c.epi.length + ' / ' + c.non.length; }));
+if (skipped.length) { print('FIGYELEM: kihagyott cellák (nincs nem epizódnap):', skipped.map(function(c) { return c.key; })); }
+
+// ---------------- 6. TERMÉKEK ---------------------------------------
+// CAMS: naponta 8 kép (00 UTC futás, F0..F21); a dátum az érvényességi időből jön.
+var cams = winterOnly(ee.ImageCollection('ECMWF/CAMS/NRT')
+    .filter(ee.Filter.eq('model_initialization_hour', 0))
+    .filter(ee.Filter.lt('model_forecast_hour', 24))
+    .select('particulate_matter_d_less_than_25_um_surface'))
+  .map(addDate);
+var aai = winterOnly(ee.ImageCollection('COPERNICUS/S5P/OFFL/L3_AER_AI')
+    .select('absorbing_aerosol_index')).map(addDate);
+var no2 = winterOnly(ee.ImageCollection('COPERNICUS/S5P/OFFL/L3_NO2')
+    .select('tropospheric_NO2_column_number_density')).map(addDate);
+
+// Gyors áttekintő rétegek (NEM a végleges anomália): epizód-átlag a térképen
+var pmVis = {min: 0, max: 40, palette: ['green', 'yellow', 'orange', 'red', 'purple']};
+Map.addLayer(cams.filter(ee.Filter.inList('date', selected)).mean().clip(hungary), pmVis, 'CAMS PM2.5 - epizódnapok (áttekintő)', false);
+
+// Átlag és (S5P-nél) az érvényes megfigyelések pixelenkénti száma
+function meanAndCount(col, dates, tag, withCount) {
+  var sub = col.filter(ee.Filter.inList('date', dates));
+  var img = sub.mean().rename(tag);
+  if (withCount) { img = img.addBands(sub.count().rename('n_' + tag)); }
+  return img;
+}
+
+// ---------------- 7. 5x5 km RÁCS ------------------------------------
+var grid = hungary.coveringGrid('EPSG:3035', 5000).map(function(f) {
+  var c = f.geometry().centroid(1).transform('EPSG:3035', 1).coordinates();
+  var id = ee.Number(c.get(0)).round().format('%d').cat('_').cat(ee.Number(c.get(1)).round().format('%d'));
+  return f.set('cell_id', id);
+});
+print('Rácscellák száma:', grid.size());
+
+function cellTable(c) {
+  var img = ee.Image.cat([
+    meanAndCount(cams, c.epi, 'pm_epi', false),
+    meanAndCount(cams, c.non, 'pm_non', false),
+    meanAndCount(aai,  c.epi, 'uvai_epi', true),
+    meanAndCount(aai,  c.non, 'uvai_non', true),
+    meanAndCount(no2,  c.epi, 'no2_epi', true),
+    meanAndCount(no2,  c.non, 'no2_non', true)
+  ]);
+  return img.reduceRegions({
+    collection: grid, reducer: ee.Reducer.mean(), scale: 5000, crs: 'EPSG:3035'
+  }).map(function(f) {
+    return f.set({tel: c.tel, honap: c.honap, n_epi: c.epi.length, n_non: c.non.length});
+  });
+}
+
+// ---------------- 8. EXPORT: télenként egy tábla ------------------------
+var COLS = ['cell_id', 'tel', 'honap', 'n_epi', 'n_non',
+  'pm_epi', 'pm_non',
+  'uvai_epi', 'uvai_non', 'n_uvai_epi', 'n_uvai_non',
+  'no2_epi', 'no2_non', 'n_no2_epi', 'n_no2_non'];
+
+var tels = {};
+cells.forEach(function(c) { (tels[c.tel] = tels[c.tel] || []).push(c); });
+Object.keys(tels).forEach(function(w) {
+  var fc = ee.FeatureCollection(tels[w].map(cellTable)).flatten();
+  Export.table.toDrive({
+    collection: fc.select(COLS, null, false),     // geometria nélkül
+    description: 'cellak_tel_' + w,
+    fileFormat: 'CSV'
+  });
+});
+
+// A rács geometriája külön (a cell_id-vel kapcsolható vissza)
+Export.table.toDrive({
+  collection: grid.select(['cell_id']),
+  description: 'HU_5km_racs_geometria',
+  fileFormat: 'SHP'
+});
+
+// Dokumentációs / reprodukálhatósági exportok
+Export.table.toDrive({
+  collection: ee.FeatureCollection(selected.map(function(d) { return ee.Feature(null, {date: d}); })),
+  description: 'epizodnapok_lista',
+  fileFormat: 'CSV'
+});
+Export.table.toDrive({
+  collection: dayTable,
+  description: 'ERA5_napi_szel_homerseklet',
+  fileFormat: 'CSV',
+  selectors: ['date', 'wind', 'temp']
+});

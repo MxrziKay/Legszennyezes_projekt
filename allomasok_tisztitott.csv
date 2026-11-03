@@ -1,0 +1,38 @@
+id,varos,cím,Állomás típusa,lon,lat,geokodolt,pm_oszlop,tipus_csoport,budapest,lefed_2021_2022,lefed_2022_2023,lefed_2023_2024,lefed_2024_2025,lefed_2025_2026,napok_adattal,pm25_atlag,pm25_van
+2,Esztergom,Petõfi Sándor u. 26-28.,városi háttér,18.7473153,47.790482,True,Esztergom,háttér,0,81.0,91.0,98.0,97.0,97.0,852,17.1,1
+3,Gyõr,Szent István út,városi közlekedési,17.6277025,47.6813223,True,Gyõr 1 Szent István,közlekedési,0,98.0,97.0,96.0,93.0,96.0,880,18.8,1
+4,Gyõr,Szigethy Attila u.- Ifjúság krt.,városi háttér,17.657439649316753,47.67798670240228,False,Gyõr 2 Ifjúság,háttér,0,97.0,84.0,72.0,26.0,97.0,689,16.5,1
+6,Sopron,Kodály Zoltán tér,városi háttér,16.5741812,47.69195,True,Sopron,háttér,0,63.0,97.0,97.0,94.0,79.0,789,15.5,1
+7,Tatabánya,Szent Borbála út 5. (Ságvári),városi közlekedési,18.420516331285327,47.55590851324176,False,Tatabánya Ságvári,közlekedési,0,91.0,100.0,72.0,99.0,99.0,846,20.5,1
+9,Szentgotthárd,Füzes u. 7.,városi háttér,16.275632327619633,46.95638775518136,False,Szentgotthárd,háttér,0,0.0,0.0,0.0,0.0,100.0,183,20.5,1
+11,Ajka,Bródy Imre u. 4,külvárosi háttér,17.5598644,47.1033669,True,Ajka,háttér,0,100.0,99.0,100.0,100.0,100.0,915,19.7,1
+12,Dunaújváros,Köztársaság út 14.,városi ipari,18.9347288,46.9654054,True,Dunaújváros,ipari,0,95.0,98.0,97.0,99.0,97.0,890,15.9,1
+13,Székesfehérvár,Palotai út. – Mészöly Géza utca,városi közlekedési,18.40062351286604,47.194930758159984,False,Székesfehérvár,közlekedési,0,97.0,100.0,100.0,100.0,100.0,911,17.5,1
+14,Várpalota,Szent István út - Honvéd u.,városi közlekedési,18.14296239290493,47.2017217666016,False,Várpalota,közlekedési,0,100.0,99.0,100.0,100.0,100.0,914,21.2,1
+15,Veszprém,Kádár utca - Csermák lépcsõ,külvárosi háttér,17.90503476491726,47.08939262660025,False,Veszprém,háttér,0,98.0,97.0,83.0,93.0,99.0,862,14.8,1
+16,Budapest,XVIII. ker Gilice tér 39.,városi háttér,19.182194368955784,47.43033702983288,False,Budapest Gilice tér,háttér,1,86.0,15.0,55.0,63.0,92.0,571,15.8,1
+17,Budapest,II. ker. Széna tér,városi közlekedési,19.026970497293192,47.50784346105912,False,Budapest Széna tér,közlekedési,1,90.0,36.0,84.0,78.0,98.0,708,13.9,1
+18,Budapest,VIII. ker. Teleki László tér,városi közlekedési,19.08453974286882,47.4932405333161,False,Budapest Teleki tér,közlekedési,1,92.0,83.0,85.0,23.0,29.0,572,14.7,1
+19,Budapest,II.ker. Pesthidegkút Községház u. 10.,városi háttér,18.961501001102445,47.56263172074656,False,Budapest Pesthidegkút,háttér,1,84.0,81.0,67.0,29.0,38.0,547,12.7,1
+20,Budapest,XV. ker. Kõrakás park,városi háttér,19.145100543674754,47.543217408184645,False,Budapest Kõrakás park,háttér,1,100.0,99.0,99.0,96.0,100.0,905,20.3,1
+21,Budapest,XI. ker Kosztolányi D. tér,városi közlekedési,19.040534379748724,47.47501055400618,False,Budapest Kosztolányi D. tér,közlekedési,1,0.0,0.0,0.0,0.0,0.0,0,,0
+22,Budapest,XIII. ker. Honvéd telep Dózsa György út 53.,városi háttér,19.06840216803633,47.52158775864375,False,Budapest Honvéd,háttér,1,89.0,87.0,95.0,99.0,100.0,861,18.2,1
+23,Budapest,V. ker. Erzsébet tér,városi közlekedési,19.05262482537028,47.497541767633045,False,Budapest Erzsébet tér,közlekedési,1,100.0,98.0,98.0,100.0,91.0,894,18.8,1
+24,Budapest,X. ker. Gergely u. 85.,városi háttér,19.15569648905922,47.46773981749455,False,Budapest Gergely utca,háttér,1,100.0,56.0,83.0,100.0,98.0,802,17.4,1
+25,Budapest,XXII ker.Tûzliliom u. 12.,külvárosi háttér,19.00844489072299,47.40736168552333,False,Budapest Budatétény,háttér,1,99.0,94.0,98.0,96.0,100.0,893,16.9,1
+27,Százhalombatta,Búzavirág tér,külvárosi háttér,18.92062981610837,47.309088022452265,False,Százhalombatta 1 Búzavirág tér,háttér,0,86.0,96.0,100.0,67.0,100.0,822,19.0,1
+30,Szolnok,Ady Endre út 9.,városi közlekedési,20.1972867,47.1772489,True,Szolnok,közlekedési,0,100.0,99.0,98.0,91.0,0.0,711,15.9,1
+34,Hernádszurdok,Gátõrház 3.,vidéki háttér,21.20995333510003,48.48612343152913,False,Hernádszurdok,háttér,0,99.0,97.0,99.0,93.0,98.0,892,17.2,1
+35,Kazincbarcika,Lini István tér 1.,városi háttér,20.6160903,48.247079,True,Kazincbarcika,háttér,0,99.0,98.0,100.0,100.0,100.0,910,27.9,1
+36,Miskolc,Búza tér,városi közlekedési,20.7933127,48.1050511,True,Miskolc Búza tér,közlekedési,0,98.0,99.0,97.0,97.0,98.0,896,26.5,1
+38,Miskolc-martintelep,Alföldi utca,külvárosi háttér,20.813720214011585,48.09016913120952,False,Miskolc Alföldi,háttér,0,100.0,0.0,100.0,100.0,100.0,733,31.1,1
+41,Sajószentpéter,Sport utca 13.,külvárosi ipari,20.7006026,48.218601,True,Sajószentpéter,ipari,0,82.0,100.0,100.0,98.0,100.0,879,30.5,1
+42,Nyíregyháza,Széna tér,városi közlekedési,21.7056752,47.9607829,True,Nyíregyháza,közlekedési,0,96.0,65.0,50.0,92.0,95.0,730,22.1,1
+43,Debrecen,Kalotaszeg tér,városi háttér,21.6250068,47.5136935,True,Debrecen Kalotaszeg tér,háttér,0,100.0,94.0,97.0,98.0,98.0,893,21.0,1
+45,Békéscsaba,Kolozsvári u. 24.,külvárosi háttér,21.067292,46.6680405,True,Békéscsaba,háttér,0,22.0,36.0,88.0,94.0,96.0,613,26.5,1
+46,Szeged ,Rózsa utca,városi háttér,20.1542716,46.2664254,True,Szeged 2 Rózsa u.,háttér,0,91.0,92.0,77.0,93.0,92.0,814,16.2,1
+47,Kecskemét,Tóth László sétány,városi háttér,19.688095,46.9021884,True,Kecskemét,háttér,0,96.0,99.0,97.0,95.0,95.0,883,19.0,1
+48,Kaposvár,Zaranyi utca,városi háttér,17.796445499022884,46.37112936095479,False,Kaposvár,háttér,0,0.0,0.0,98.0,98.0,97.0,537,17.5,1
+50,Pécs,Boszorkány út 2.,külvárosi háttér,18.2125066,46.0803509,True,Pécs Boszorkány u.,háttér,0,95.0,97.0,98.0,94.0,94.0,876,14.5,1
+51,Pécs,Szabadság u. 7.,városi közlekedési,18.2247454,46.0716714,True,Pécs Szabadság u.,közlekedési,0,100.0,99.0,100.0,96.0,99.0,905,19.4,1
+52,Pécs,Apáczai Csere János körtér 1. (Nevelési központ),városi háttér,18.2227989,46.0413784,True,Pécs Nevelési Központ,háttér,0,100.0,100.0,100.0,99.0,100.0,914,18.4,1
