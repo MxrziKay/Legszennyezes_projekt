@@ -19,7 +19,7 @@ Ez a dokumentum a szkriptek által létrehozott és a kutatásban használt táb
 | `nem_illesztett_tabla.csv` | `emisszio_csatolas.py` | település | kibocsátási táblában szereplő, de poligon nélküli települések |
 | `nem_illesztett_poligon.csv` | `emisszio_csatolas.py` | poligon-név | poligonréteg-beli, de adat nélküli nevek |
 
-Az `emisszio_csatolas.py` műveleteit QGIS-ben végezném el
+Az `emisszio_csatolas.py` műveleteit QGIS-ben végezném el (de feltöltöttem a repo-ba)
 
 ### A folyamat egy pillantásra
 
